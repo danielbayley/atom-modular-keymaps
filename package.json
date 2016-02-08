@@ -1,0 +1,25 @@
+{
+	"name": "modular-keymaps",
+	"version": "0.0.0",
+	"description": "A modular solution to Atom Keymaps.",
+	"keywords": [
+		"keybindings",
+		"keymap",
+		"modular",
+		"modules",
+		"config"
+	],
+	"homepage": "http://atom.io/packages/modular-keymaps",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/danielbayley/atom-modular-keymaps.git"
+	},
+	"bugs": {"url": "https://github.com/danielbayley/atom-modular-keymaps/issues"},
+	"author": {"name": "danielbayley <danielbayley@me.com>"},
+	"private": true,
+	"license": "MIT",
+
+	"scripts": {"postinstall": "mkdir -p \"$ATOM_HOME\"/keymaps"},
+
+	"engines": {"atom": "*"}
+}

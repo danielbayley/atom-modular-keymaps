@@ -1,0 +1,14 @@
+menu: [
+	label: 'Atom'
+	submenu: [
+		label: 'Open Your Keymap'
+		#submenu: [
+		#	{ label: 'Open Your Keymap', command: 'application:open-your-keymap'}
+		#	{ label: 'Open Keymaps Folder', command: 'modular-keymaps:open'}
+		#type: 'separator'
+		#]
+		#position: 'after=application:open-your-init-script' #-keymap #endof=
+		command: 'modular-keymaps:open'
+]	]
+# TODO https://github.com/atom/atom/issues/6270
+# https://discuss.atom.io/t/is-there-a-way-to-specify-menu-item-order-when-inserting-menu-items/14937/13
