@@ -1,8 +1,8 @@
 menu: [
-	label: 'Packages'
+	label: "Atom" #Packages
 	submenu: [
-		label: 'Modular Keymaps'
-		submenu: [
-			label: 'Open', command: 'modular-keymaps:open'
-			#label: 'Reload', command: 'modular-keymaps:reload'
-]	]	]
+		label: "Keymap…" #Modular Keymaps
+		#submenu: [
+			#label: "Open"
+		command: 'modular-keymaps:open'
+]	] #]
