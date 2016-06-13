@@ -4,7 +4,7 @@
 module.exports =
 
 	keymaps: "#{atom.configDirPath}/keymaps" # folder
-	backup: 'sync-settings.extraFiles'
+	#backup: 'sync-settings.extraFiles'
 	pattern: 'keymaps/*' #"{@keymaps}/*"
 
 	subs: null
@@ -28,7 +28,7 @@ module.exports =
 			#application:open-your-keymap
 
 		# Automatically reload modified keymaps
-		@subs.add atom.workspace.observeTextEditors (editor) ->
+		@subs.add atom.workspace.observeTextEditors (editor) =>
 			keymap = editor.getPath()
 			editor.onDidSave =>
 				if keymap.startsWith(@keymaps) and keymap.endsWith '.cson'
