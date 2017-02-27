@@ -22,9 +22,8 @@ module.exports =
 #-------------------------------------------------------------------------------
 
     @subs.add atom.commands.add 'atom-workspace', #body
-      'modular-keymaps:open': =>
+      'modular-keymaps:open': => #application:open-your-keymap
         @open [ @keymaps,"#{atom.configDirPath}/keymap.cson"]
-      #application:open-your-keymap
 
     # Automatically reload modified keymaps
     @subs.add atom.workspace.observeTextEditors (editor) =>

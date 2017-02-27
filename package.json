@@ -9,16 +9,13 @@
     "modules",
     "config"
   ],
-  "homepage": "https://atom.io/packages/modular-keymaps",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/danielbayley/atom-modular-keymaps.git"
-  },
-  "bugs": {
-    "url": "https://github.com/danielbayley/atom-modular-keymaps/issues"
-  },
+  "homepage": "https://atom.io/packages/modular-keymaps#readme",
+  "repository": "danielbayley/atom-modular-keymaps",
+  "bugs": "https://github.com/danielbayley/atom-modular-keymaps/issues",
   "author": {
-    "name": "Daniel Bayley <daniel.bayley@me.com> (https://github.com/danielbayley)"
+    "name": "Daniel Bayley",
+    "email": "daniel.bayley@me.com",
+    "url": "https://github.com/danielbayley"
   },
   "private": true,
   "license": "MIT",
