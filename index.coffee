@@ -1,41 +1,39 @@
-{readdir} = require 'fs' #mkdir
+{CompositeDisposable} = require 'atom'
+subs = new CompositeDisposable
+{readdir} = require 'fs'
+{resolve} = require 'path'
 {exec} = require 'child_process'
 
-module.exports =
+keymaps = "#{atom.configDirPath}/keymaps" # folder
 
-  keymaps: "#{atom.configDirPath}/keymaps" # folder
-  #backup: 'sync-settings.extraFiles'
-
-  subs: null
-  activate: ->
-    {CompositeDisposable} = require 'atom'
-    @subs = new CompositeDisposable
 #-------------------------------------------------------------------------------
-
-    # Load keymaps
-    readdir @keymaps, (err, files) =>
-      throw err if err #console.error err
-      files.forEach (keymap) =>
-        if keymap.endsWith '.cson' #try
-          atom.keymaps.loadKeymap "#{@keymaps}/#{keymap}"
+activate = ->
+  # Load keymaps
+  readdir keymaps, (err, files) ->
+    throw err if err
+    files
+      .map (path) -> resolve keymaps, path
+      .filter valid
+      .map (keymap) -> atom.keymaps.loadKeymap keymap
 
 #-------------------------------------------------------------------------------
 
-    @subs.add atom.commands.add 'atom-workspace', #body
-      'modular-keymaps:open': => #application:open-your-keymap
-        @open [ @keymaps,"#{atom.configDirPath}/keymap.cson"]
+  # Automatically reload modified keymaps.
+  subs.add atom.workspace.observeTextEditors (editor) ->
+    keymap = editor.getPath()
+    editor.onDidSave -> if valid keymap
+      atom.keymaps.reloadKeymap keymap
 
-    # Automatically reload modified keymaps
-    @subs.add atom.workspace.observeTextEditors (editor) =>
-      keymap = editor.getPath()
-      editor.onDidSave =>
-        if keymap.startsWith(@keymaps) and keymap.endsWith '.cson'
-          atom.keymaps.reloadKeymap keymap
-
-  open: (keymaps) ->
-    #exec "atom -na '#{atom.configDirPath}'/keymap{s,.cson}" #-f #atom-beta
-    atom.open pathsToOpen: keymaps #, newWindow: true
-    # FIXME atom.project.removePath atom.configDirPath
+  subs.add atom.commands.add 'atom-workspace',
+    'modular-keymaps:open': ->
+      open [ keymaps,"#{atom.configDirPath}/keymap.cson"]
 
 #-------------------------------------------------------------------------------
-  deactivate: -> @subs.dispose()
+
+valid = (file) -> ///#{keymaps}/.*\.[cj]son$///.test file
+
+open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
+
+deactivate = -> subs.dispose()
+#-------------------------------------------------------------------------------
+module.exports = {activate, deactivate}
