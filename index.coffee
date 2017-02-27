@@ -32,5 +32,10 @@ module.exports =
         if keymap.startsWith(@keymaps) and keymap.endsWith '.cson'
           atom.keymaps.reloadKeymap keymap
 
+  open: (keymaps) ->
+    #exec "atom -na '#{atom.configDirPath}'/keymap{s,.cson}" #-f #atom-beta
+    atom.open pathsToOpen: keymaps #, newWindow: true
+    # FIXME atom.project.removePath atom.configDirPath
+
 #-------------------------------------------------------------------------------
   deactivate: -> @subs.dispose()
