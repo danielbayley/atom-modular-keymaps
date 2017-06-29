@@ -1,21 +1,23 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
 {readdir} = require 'fs'
-{resolve} = require 'path'
+path = require 'path'
 {exec} = require 'child_process'
 
-keymaps = "#{atom.configDirPath}/keymaps" # folder
+configDirPath = atom.configDirPath
+keymaps = path.resolve configDirPath, 'keymaps'
+
 
 #-------------------------------------------------------------------------------
 activate = ->
   # Load keymaps
   readdir keymaps, (err, files) ->
     throw err if err
-    files
-      .map (path) -> resolve keymaps, path
-      .filter valid
-      .map (keymap) -> atom.keymaps.loadKeymap keymap
 
+    out = files
+      .map (fpath) -> path.resolve keymaps, fpath
+      .filter valid
+      .map (keymap) -> atom.keymaps.loadKeymap(keymap)
 #-------------------------------------------------------------------------------
 
   # Automatically reload modified keymaps.
@@ -26,11 +28,20 @@ activate = ->
 
   subs.add atom.commands.add 'atom-workspace',
     'modular-keymaps:open': ->
-      open [ keymaps,"#{atom.configDirPath}/keymap.cson"]
+      mainKeymaps = configDirPath + "/keymap.cson" # file
+      open [ keymaps, resolve(mainKeymaps) ]
 
 #-------------------------------------------------------------------------------
 
-valid = (file) -> ///#{keymaps}/.*\.[cj]son$///.test file
+tempkeymaps = keymaps
+if path.sep is '\\'
+  tempkeymaps = keymaps + '\\'
+  tempkeymaps = tempkeymaps.split('\\').join('\\\\')
+else
+  tempkeymaps = keymaps + '/'
+validregex = ///#{tempkeymaps}.*\.[cj]son$///
+
+valid = (file) -> validregex.test file
 
 open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 
