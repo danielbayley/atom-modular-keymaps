@@ -33,15 +33,12 @@ activate = ->
 
 #-------------------------------------------------------------------------------
 
-tempkeymaps = keymaps
-if sep is '\\'
-  tempkeymaps = keymaps + '\\'
-  tempkeymaps = tempkeymaps.split('\\').join('\\\\')
-else
-  tempkeymaps = keymaps + '/'
-validregex = ///#{tempkeymaps}.*\.[cj]son$///
+valid = (file) ->
+  tempkeymaps = keymaps + sep
+  if sep is '\\'
+    tempkeymaps = tempkeymaps.split('\\').join('\\\\')
 
-valid = (file) -> validregex.test file
+  ///#{tempkeymaps}.*\.[cj]son$///.test file
 
 open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 
