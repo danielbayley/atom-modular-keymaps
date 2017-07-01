@@ -1,11 +1,11 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
 {readdir} = require 'fs'
-path = require 'path'
+{sep, resolve} = require 'path'
 {exec} = require 'child_process'
 
 configDirPath = atom.configDirPath
-keymaps = path.resolve configDirPath, 'keymaps'
+keymaps = resolve configDirPath, 'keymaps'
 
 
 #-------------------------------------------------------------------------------
@@ -15,7 +15,7 @@ activate = ->
     throw err if err
 
     out = files
-      .map (fpath) -> path.resolve keymaps, fpath
+      .map (fpath) -> resolve keymaps, fpath
       .filter valid
       .map (keymap) -> atom.keymaps.loadKeymap(keymap)
 #-------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ activate = ->
 #-------------------------------------------------------------------------------
 
 tempkeymaps = keymaps
-if path.sep is '\\'
+if sep is '\\'
   tempkeymaps = keymaps + '\\'
   tempkeymaps = tempkeymaps.split('\\').join('\\\\')
 else
