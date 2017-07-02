@@ -7,7 +7,6 @@ subs = new CompositeDisposable
 configDirPath = atom.configDirPath
 keymaps = resolve configDirPath, 'keymaps'
 
-
 #-------------------------------------------------------------------------------
 activate = ->
   loadAllKeymaps = (rootPath) ->
@@ -24,8 +23,7 @@ activate = ->
 
       fullPaths
         .filter valid
-        .map (keymap) ->
-          atom.keymaps.loadKeymap keymap
+        .map loadKeymap
 
   loadAllKeymaps keymaps
 
@@ -34,6 +32,15 @@ validDir = (fullPath) ->
   stats = statSync fullPath
   gitDir = ///.*\.git$///.test fullPath
   return stats.isDirectory() and not gitDir
+
+loadKeymap = (keymap) ->
+  try
+    atom.keymaps.loadKeymap keymap
+  catch error
+    tempOptions =
+      dismissable: false
+      detail: error.stack
+    atom.notifications.addError 'Failed to load `' + keymap + '`', tempOptions
 
 #-------------------------------------------------------------------------------
 
