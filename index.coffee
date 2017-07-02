@@ -7,55 +7,28 @@ subs = new CompositeDisposable
 configDirPath = atom.configDirPath
 keymaps = resolve configDirPath, 'keymaps'
 
-#-------------------------------------------------------------------------------
-activate = ->
-  loadAllKeymaps = (rootPath) ->
-    readdir rootPath, (err, pathNames) ->
-      throw err if err
+activate = -> loadAllKeymaps keymaps
 
-      fullPaths = pathNames
-        .map (name) -> resolve rootPath, name
+loadAllKeymaps = (rootPath) ->
+  readdir rootPath, (err, pathNames) ->
+    throw err if err
 
-      fullPaths
-        .filter validDir
-        .map (dir) ->
-          loadAllKeymaps dir
+    fullPaths = pathNames
+      .map (name) -> resolve rootPath, name
 
-      fullPaths
-        .filter valid
-        .map loadKeymap
+    fullPaths
+      .filter validDir
+      .map (dir) ->
+        loadAllKeymaps dir
 
-  loadAllKeymaps keymaps
-
+    fullPaths
+      .filter valid
+      .map loadKeymap
 
 validDir = (fullPath) ->
   stats = statSync fullPath
   gitDir = ///.*\.git$///.test fullPath
   return stats.isDirectory() and not gitDir
-
-loadKeymap = (keymap) ->
-  try
-    atom.keymaps.loadKeymap keymap
-  catch error
-    tempOptions =
-      dismissable: false
-      detail: error.stack
-    atom.notifications.addError 'Failed to load `' + keymap + '`', tempOptions
-
-#-------------------------------------------------------------------------------
-
-  # Automatically reload modified keymaps.
-  subs.add atom.workspace.observeTextEditors (editor) ->
-    keymap = editor.getPath()
-    editor.onDidSave -> if valid keymap
-      atom.keymaps.reloadKeymap keymap
-
-  subs.add atom.commands.add 'atom-workspace',
-    'modular-keymaps:open': ->
-      mainKeymaps = configDirPath + "/keymap.cson" # file
-      open [ keymaps, resolve(mainKeymaps) ]
-
-#-------------------------------------------------------------------------------
 
 valid = (file) ->
   tempkeymaps = keymaps + sep
@@ -64,8 +37,30 @@ valid = (file) ->
 
   ///#{tempkeymaps}.*\.[cj]son$///.test file
 
+loadKeymap = (keymap) ->
+  try
+    options =
+      watch: true
+    atom.keymaps.loadKeymap keymap, options
+  catch error
+    tempOptions =
+      dismissable: false
+      detail: error.stack
+    atom.notifications.addError 'Failed to load `' + keymap + '`', tempOptions
+    atom.keymaps.watchKeymap keymap
+
+#-------------------------------------------------------------------------------
+
+subs.add atom.commands.add 'atom-workspace',
+  'modular-keymaps:open': ->
+    mainKeymaps = configDirPath + "/keymap.cson" # file
+    open [ keymaps, resolve(mainKeymaps) ]
+
 open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 
+#-------------------------------------------------------------------------------
+
 deactivate = -> subs.dispose()
+
 #-------------------------------------------------------------------------------
 module.exports = {activate, deactivate}
