@@ -1,6 +1,6 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
-{readdir} = require 'fs'
+{readdir, statSync} = require 'fs'
 {sep, resolve} = require 'path'
 {exec} = require 'child_process'
 
@@ -10,14 +10,31 @@ keymaps = resolve configDirPath, 'keymaps'
 
 #-------------------------------------------------------------------------------
 activate = ->
-  # Load keymaps
-  readdir keymaps, (err, files) ->
-    throw err if err
+  loadAllKeymaps = (rootPath) ->
+    readdir rootPath, (err, pathNames) ->
+      throw err if err
 
-    out = files
-      .map (fpath) -> resolve keymaps, fpath
-      .filter valid
-      .map (keymap) -> atom.keymaps.loadKeymap(keymap)
+      fullPaths = pathNames
+        .map (name) -> resolve rootPath, name
+
+      fullPaths
+        .filter validDir
+        .map (dir) ->
+          loadAllKeymaps dir
+
+      fullPaths
+        .filter valid
+        .map (keymap) ->
+          atom.keymaps.loadKeymap keymap
+
+  loadAllKeymaps keymaps
+
+
+validDir = (fullPath) ->
+  stats = statSync fullPath
+  gitDir = ///.*\.git$///.test fullPath
+  return stats.isDirectory() and not gitDir
+
 #-------------------------------------------------------------------------------
 
   # Automatically reload modified keymaps.
