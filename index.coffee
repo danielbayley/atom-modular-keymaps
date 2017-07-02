@@ -44,13 +44,13 @@ loadKeymap = (keymap) ->
     atom.keymaps.loadKeymap keymap, options
   catch error
     displayError keymap, error
+    atom.keymaps.watchKeymap keymap
 
 displayError = (keymap, error) ->
   tempOptions =
     dismissable: false
     detail: error.stack
   atom.notifications.addError 'Failed to load `' + keymap + '`', tempOptions
-  atom.keymaps.watchKeymap keymap
 
 #-------------------------------------------------------------------------------
 
