@@ -1,69 +1,39 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
-{readdir, statSync} = require 'fs'
-{sep, resolve} = require 'path'
+{readdir} = require 'fs'
+{resolve} = require 'path'
 {exec} = require 'child_process'
 
-configDirPath = atom.configDirPath
-keymaps = resolve configDirPath, 'keymaps'
+keymaps = "#{atom.configDirPath}/keymaps" # folder
 
-activate = -> loadAllKeymaps keymaps
-
-loadAllKeymaps = (rootPath) ->
-  readdir rootPath, (err, pathNames) ->
+#-------------------------------------------------------------------------------
+activate = ->
+  # Load keymaps
+  readdir keymaps, (err, files) ->
     throw err if err
-
-    fullPaths = pathNames
-      .map (name) -> resolve rootPath, name
-
-    fullPaths
-      .filter validDir
-      .map (dir) ->
-        loadAllKeymaps dir
-
-    fullPaths
+    files
+      .map (path) -> resolve keymaps, path
       .filter valid
-      .map loadKeymap
-
-validDir = (fullPath) ->
-  stats = statSync fullPath
-  gitDir = ///.*\.git$///.test fullPath
-  return stats.isDirectory() and not gitDir
-
-valid = (file) ->
-  tempkeymaps = keymaps + sep
-  if sep is '\\'
-    tempkeymaps = tempkeymaps.split('\\').join('\\\\')
-
-  ///#{tempkeymaps}.*\.[cj]son$///.test file
-
-loadKeymap = (keymap) ->
-  try
-    options =
-      watch: true
-    atom.keymaps.loadKeymap keymap, options
-  catch error
-    displayError keymap, error
-    atom.keymaps.watchKeymap keymap
-
-displayError = (keymap, error) ->
-  tempOptions =
-    dismissable: false
-    detail: error.stack
-  atom.notifications.addError 'Failed to load `' + keymap + '`', tempOptions
+      .map (keymap) -> atom.keymaps.loadKeymap keymap
 
 #-------------------------------------------------------------------------------
 
-subs.add atom.commands.add 'atom-workspace',
-  'modular-keymaps:open': ->
-    mainKeymaps = configDirPath + "/keymap.cson" # file
-    open [ keymaps, resolve(mainKeymaps) ]
+  # Automatically reload modified keymaps.
+  subs.add atom.workspace.observeTextEditors (editor) ->
+    keymap = editor.getPath()
+    editor.onDidSave -> if valid keymap
+      atom.keymaps.reloadKeymap keymap
+
+  subs.add atom.commands.add 'atom-workspace',
+    'modular-keymaps:open': ->
+      open [ keymaps,"#{atom.configDirPath}/keymap.cson"]
+
+#-------------------------------------------------------------------------------
+
+valid = (file) -> ///#{keymaps}/.*\.[cj]son$///.test file
 
 open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 
-#-------------------------------------------------------------------------------
-
 deactivate = -> subs.dispose()
-
 #-------------------------------------------------------------------------------
 module.exports = {activate, deactivate}
