@@ -1,15 +1,17 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
-{readdir} = require 'fs'
-{resolve} = require 'path'
+fs = require 'fs'
+{sep, resolve} = require 'path'
 {exec} = require 'child_process'
 
-keymaps = "#{atom.configDirPath}/keymaps" # folder
+keymaps = resolve atom.configDirPath, 'keymaps'
 
 #-------------------------------------------------------------------------------
 activate = ->
+  fs.mkdirSync keymaps if !fs.existsSync keymaps
+
   # Load keymaps
-  readdir keymaps, (err, files) ->
+  fs.readdir keymaps, (err, files) ->
     throw err if err
     files
       .map (path) -> resolve keymaps, path
@@ -26,11 +28,14 @@ activate = ->
 
   subs.add atom.commands.add 'atom-workspace',
     'modular-keymaps:open': ->
-      open [ keymaps,"#{atom.configDirPath}/keymap.cson"]
+      open [ keymaps, resolve atom.configDirPath, keymap.cson ]
 
 #-------------------------------------------------------------------------------
 
-valid = (file) -> ///#{keymaps}/.*\.[cj]son$///.test file
+valid = (file) ->
+  tempkeymaps = "#{keymaps}#{sep}"
+  tempkeymaps = tempkeymaps.split('\\').join('\\\\') if sep is '\\'
+  ///#{tempkeymaps}.*\.[cj]son$///.test file
 
 open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 
