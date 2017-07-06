@@ -19,9 +19,6 @@
   },
   "private": true,
   "license": "MIT",
-  "scripts": {
-    "postinstall": "mkdir -p \"${ATOM_HOME:-~/.atom}\"/keymaps"
-  },
   "engines": {
     "atom": "*"
   }
