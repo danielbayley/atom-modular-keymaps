@@ -19,10 +19,11 @@ Install
 
 License
 -------
-[MIT] © [Daniel Bayley]
+[MIT] © [Daniel Bayley][] [et al]
 
 [MIT]:              LICENSE.md
 [Daniel Bayley]:    https://github.com/danielbayley
+[et al]:            https://github.com/danielbayley/atom-modular-keymaps/graphs/contributors
 [atom]:             https://atom.io
 [apm]:              https://img.shields.io/apm/v/modular-keymaps.svg?style=flat-square
 [package]:          https://atom.io/packages/modular-keymaps

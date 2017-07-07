@@ -17,6 +17,9 @@
     "email": "daniel.bayley@me.com",
     "url": "https://github.com/danielbayley"
   },
+  "contributors": [
+    "Jarett Lee <jarett.lee.pi@gmail.com> (https://github.com/jarett-lee)"
+  ],
   "private": true,
   "license": "MIT",
   "engines": {
