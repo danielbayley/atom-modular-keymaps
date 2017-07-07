@@ -5,6 +5,8 @@ fs = require 'fs-extra'
 
 keymaps = resolve atom.configDirPath,'keymaps' # folder
 
+config = (get) -> atom.config.get "modular-keymaps.#{get}"
+
 #-------------------------------------------------------------------------------
 activate = ->
   fs.mkdirp keymaps
@@ -22,8 +24,8 @@ activate = ->
   # Automatically load new keymaps.
   subs.add atom.workspace.observeTextEditors (editor) ->
     keymap = editor.getPath()
-    editor.onDidSave -> if valid keymap
-      load keymap
+    editor.onDidSave ->
+      load keymap, config 'notify' if valid keymap
 
   subs.add atom.commands.add 'body',
     'modular-keymaps:open': ->
@@ -36,6 +38,9 @@ valid = (file) -> file.startsWith(keymaps) and /\.[cj]son$/.test file
 load = (keymap, notify = false) ->
   try
     atom.keymaps.loadKeymap keymap, watch: true
+    if notify is true
+      message = "`#{keymap}` was reloaded."
+      atom.notifications.addSuccess message, dismissable: true
   catch error
     unless atom.packages.hasActivatedInitialPackages()
       alert keymap, error

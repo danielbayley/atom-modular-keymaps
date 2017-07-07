@@ -23,5 +23,12 @@
   },
   "engines": {
     "atom": "*"
+  },
+  "configSchema": {
+    "notify": {
+      "description": "Display notifications when keymaps are reloaded.",
+      "type": "boolean",
+      "default": true
+    }
   }
 }
