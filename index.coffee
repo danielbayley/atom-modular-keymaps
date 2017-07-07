@@ -1,13 +1,13 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
-fs = require 'fs'
 {resolve} = require 'path'
+fs = require 'fs-extra'
 
 keymaps = resolve atom.configDirPath,'keymaps' # folder
 
 #-------------------------------------------------------------------------------
 activate = ->
-  fs.mkdirSync keymaps if !fs.existsSync keymaps
+  fs.mkdirp keymaps
 
   # Load keymaps
   fs.readdir keymaps, (error, files) ->

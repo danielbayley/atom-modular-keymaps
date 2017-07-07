@@ -18,6 +18,9 @@
   ],
   "private": true,
   "license": "MIT",
+  "dependencies": {
+    "fs-extra": "^3.0.1"
+  },
   "engines": {
     "atom": "*"
   }
