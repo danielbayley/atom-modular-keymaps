@@ -15,15 +15,15 @@ activate = ->
     files
       .map (path) -> resolve keymaps, path
       .filter valid
-      .map (keymap) -> atom.keymaps.loadKeymap keymap
+      .map load # keymap
 
 #-------------------------------------------------------------------------------
 
-  # Automatically reload modified keymaps.
+  # Automatically load new keymaps.
   subs.add atom.workspace.observeTextEditors (editor) ->
     keymap = editor.getPath()
     editor.onDidSave -> if valid keymap
-      atom.keymaps.reloadKeymap keymap
+      load keymap
 
   subs.add atom.commands.add 'body',
     'modular-keymaps:open': ->
@@ -31,9 +31,27 @@ activate = ->
 
 #-------------------------------------------------------------------------------
 
-
-open = (keymaps) -> atom.open pathsToOpen: keymaps #, newWindow: true
 valid = (file) -> file.startsWith(keymaps) and /\.[cj]son$/.test file
+
+load = (keymap, notify = false) ->
+  try
+    atom.keymaps.loadKeymap keymap, watch: true
+  catch error
+    unless atom.packages.hasActivatedInitialPackages()
+      alert keymap, error
+      atom.keymaps.watchKeymap keymap
+
+open = (keymaps) -> atom.open pathsToOpen: keymaps #newWindow: true
+
+alert = (keymap, {stack}) ->
+  line = stack.match( /\d+:\d+/ )[0]
+  atom.notifications.addError "Failed to load `#{keymap}`",
+    detail: stack
+    dismissable: true
+    buttons: [
+      text: "Edit Keymap"
+      onDidClick: -> open "#{keymap}:#{line}"
+    ]
 
 deactivate = -> subs.dispose()
 #-------------------------------------------------------------------------------
