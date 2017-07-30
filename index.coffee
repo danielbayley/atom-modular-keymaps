@@ -38,9 +38,7 @@ valid = (file) -> file.startsWith(keymaps) and /\.[cj]son$/.test file
 load = (keymap, notify = false) ->
   try
     atom.keymaps.loadKeymap keymap, watch: true
-    if notify is true
-      message = "`#{keymap}` was reloaded."
-      atom.notifications.addSuccess message, dismissable: true
+    atom.notifications.addSuccess "`#{keymap}` was reloaded." if notify
   catch error
     unless atom.packages.hasActivatedInitialPackages()
       alert keymap, error
@@ -52,7 +50,6 @@ alert = (keymap, {stack}) ->
   line = stack.match( /\d+:\d+/ )[0]
   atom.notifications.addError "Failed to load `#{keymap}`",
     detail: stack
-    dismissable: true
     buttons: [
       text: "Edit Keymap"
       onDidClick: -> open "#{keymap}:#{line}"
