@@ -38,11 +38,11 @@ valid = (file) -> file.startsWith(keymaps) and /\.[cj]son$/.test file
 load = (keymap, notify = false) ->
   try
     atom.keymaps.loadKeymap keymap, watch: true
-    atom.notifications.addSuccess "`#{keymap}` was reloaded." if notify
+    if notify is true
+      atom.notifications.addSuccess "`#{keymap}` was reloaded."
   catch error
-    unless atom.packages.hasActivatedInitialPackages()
-      alert keymap, error
-      atom.keymaps.watchKeymap keymap
+    alert keymap, error
+    atom.keymaps.watchKeymap keymap
 
 open = (keymaps) -> atom.open pathsToOpen: keymaps #newWindow: true
 
