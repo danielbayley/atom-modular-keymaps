@@ -1,7 +1,7 @@
 {CompositeDisposable} = require 'atom'
 subs = new CompositeDisposable
 {resolve} = require 'path'
-fs = require 'fs-extra'
+fs = require 'fs-plus'
 
 keymaps = resolve atom.configDirPath,'keymaps' # folder
 
@@ -9,10 +9,10 @@ config = (get) -> atom.config.get "modular-keymaps.#{get}"
 
 #-------------------------------------------------------------------------------
 activate = ->
-  fs.mkdirp keymaps
+  fs.makeTree keymaps
 
   # Load keymaps
-  fs.readdir keymaps, (error, files) ->
+  fs.list keymaps, (error, files) ->
     #throw error if error
     files
       .map (path) -> resolve keymaps, path
